@@ -1,0 +1,128 @@
+services:
+  isdb-scanner:
+    image: isdb-scanner
+    container_name: ISDBScanner
+    build:
+      context: ./ISDBScanner
+    environment:
+      - EXCLUDE_PAY_TV=1
+    devices:
+      - /dev/bus:/dev/bus
+      - /dev/px4video0:/dev/px4video0
+      - /dev/px4video1:/dev/px4video1
+      - /dev/px4video2:/dev/px4video2
+      - /dev/px4video3:/dev/px4video3
+      - /dev/px4video4:/dev/px4video4
+      - /dev/px4video5:/dev/px4video5
+      - /dev/px4video6:/dev/px4video6
+      - /dev/px4video7:/dev/px4video7
+    volumes:
+      - ./Scanned:/app/Scanned
+      - ./ISDBScanner/entrypoint.sh:/app/entrypoint.sh
+    command: ["/bin/bash", "/app/entrypoint.sh"]
+    entrypoint: ""
+    restart: "no"
+
+  mirakurun:
+    image: mirakurun
+    container_name: Mirakurun
+    build:
+      context: ./Mirakurun
+    ports:
+      - "40772:40772"
+      - "9229:9229"
+    devices:
+      - /dev/bus:/dev/bus
+      - /dev/px4video0:/dev/px4video0
+      - /dev/px4video1:/dev/px4video1
+      - /dev/px4video2:/dev/px4video2
+      - /dev/px4video3:/dev/px4video3
+      - /dev/px4video4:/dev/px4video4
+      - /dev/px4video5:/dev/px4video5
+      - /dev/px4video6:/dev/px4video6
+      - /dev/px4video7:/dev/px4video7
+    volumes:
+      - ./Scanned/Mirakurun/channels.yml:/app-config/channels.yml
+      - ./Scanned/Mirakurun/tuners.yml:/app-config/tuners.yml
+      - mirakurun-data:/app-data
+    environment:
+      TZ: Asia/Tokyo
+    cap_add:
+      - SYS_ADMIN
+      - SYS_NICE
+    depends_on:
+      isdb-scanner:
+        condition: service_completed_successfully
+    restart: always
+    
+  edcb:
+    image: edcb
+    container_name: EDCB
+    build:
+      context: ./EDCB
+    volumes:
+      - "edcb-epg-data:/var/local/edcb/Setting/EpgData"
+      - "./Record/TV-Record:/Record/TV-Record"
+      - "./Scanned/EDCB-Wine/BonDriver_mirakc_S(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc_S(LinuxMirakc).ChSet4.txt"
+      - "./Scanned/EDCB-Wine/BonDriver_mirakc_T(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc_T(LinuxMirakc).ChSet4.txt"
+      - "./Scanned/EDCB-Wine/BonDriver_mirakc(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc(LinuxMirakc).ChSet4.txt"
+      - "./Scanned/EDCB-Wine/ChSet5.txt:/var/local/edcb/Setting/ChSet5.txt"
+      - "./EDCB/EDCB_Config/Common.ini:/var/local/edcb/Common.ini"
+      - "./EDCB/EDCB_Config/EpgDataCap_Bon.ini:/var/local/edcb/EpgDataCap_Bon.ini"
+      - "./EDCB/EDCB_Config/EpgTimerSrv.ini:/var/local/edcb/EpgTimerSrv.ini"
+      - "./EDCB/EDCB_Config/RecEnd.sh:/var/local/edcb/RecEnd.sh"
+    depends_on:
+      - mirakurun
+    restart: always
+    network_mode: host
+
+
+  konomitv:
+    image: konomitv
+    container_name: KonomiTV
+    build:
+      context: ./KonomiTV
+    depends_on:
+      - mirakurun
+      - edcb
+    restart: always
+    network_mode: host
+    volumes:
+      - './KonomiTV/config.yaml:/code/config.yaml'
+      - 'konomitv-data:/code/server/data/'
+      - './Record/TV-Encoded:/host-rootfs/Record/TV-Encoded'
+      - './Record/TV-Capture:/host-rootfs/Record/TV-Capture'
+
+    # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
+    # QSVEncC / VCEEncC を利用する (Intel Graphics / AMD GPU にアクセスする) ために必要な設定
+    # VCEEncC (AMD GPU) を利用するには、別途 AMDGPU-PRO Driver のインストールが必要です。
+    # GPU が1個も搭載されていない (/dev/dri/ 以下のデバイスファイルが存在しない) 特殊な環境では、
+    # コメントアウトしてこの設定を無効にしないと、KonomiTV サーバーを起動できなくなります。
+    devices:
+      - '/dev/dri/:/dev/dri/'
+    # NVEncC を利用する (NVIDIA GPU にアクセスする) ために必要な設定
+    # NVEncC (NVIDIA GPU) を利用するには、別途 NVIDIA Graphics Driver と
+    # NVIDIA Container Toolkit のインストールが必要です。
+    # コメントアウトを解除してこの設定を有効にすると、NVIDIA GPU が搭載されていない環境では KonomiTV サーバーを起動できなくなります。
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [compute, utility, video]
+    # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
+
+
+
+volumes:
+  mirakurun-data:
+   name: mirakurun-data
+  edcb-epg-data:
+    name: edcb-epg-data
+  konomitv-data:
+    name: konomitv-data
+
+
+
+    
