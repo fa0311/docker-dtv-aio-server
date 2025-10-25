@@ -33,5 +33,5 @@ docker compose up -d
 このプロジェクトは他にも以下のプロジェクトを参考にしています：
 
 - [nunawa/docker-dtv-server](https://github.com/nunawa/docker-dtv-server) - [LICENSE](https://github.com/nunawa/docker-dtv-server/blob/main/LICENSE)
-- [tsukumijima/EDCB-Wine](https://github.com/tsukumijima/EDCB-Wine) - [LICENSE](https://github.com/tsukumijima/EDCB-Wine/blob/main/LICENSE)
+- [tsukumijima/EDCB-Wine](https://github.com/tsukumijima/EDCB-Wine) - [LICENSE](https://github.com/tsukumijima/EDCB-Wine/blob/master/License.txt)
 
