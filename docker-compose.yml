@@ -84,8 +84,8 @@ services:
     build:
       context: ./EDCB
     volumes:
-      - "edcb-epg-data:/var/local/edcb/Setting/EpgData"
-      - "./Record/TV-Record:/Record/TV-Record"
+      - "edcb-epg-data:/var/local/edcb/Setting"
+      - "tv-record-data:/Record/TV-Record"
       - "./Scanned/EDCB-Wine/BonDriver_mirakc_S(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc_S(LinuxMirakc).ChSet4.txt"
       - "./Scanned/EDCB-Wine/BonDriver_mirakc_T(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc_T(LinuxMirakc).ChSet4.txt"
       - "./Scanned/EDCB-Wine/BonDriver_mirakc(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc(LinuxMirakc).ChSet4.txt"
@@ -93,6 +93,7 @@ services:
       - "./EDCB/EDCB_Config/Common.ini:/var/local/edcb/Common.ini"
       - "./EDCB/EDCB_Config/EpgDataCap_Bon.ini:/var/local/edcb/EpgDataCap_Bon.ini"
       - "./EDCB/EDCB_Config/EpgTimerSrv.ini:/var/local/edcb/EpgTimerSrv.ini"
+      - "./EDCB/EDCB_Config/bat:/var/local/edcb/bat"
       - "./EDCB/EDCB_Config/RecEnd.sh:/var/local/edcb/RecEnd.sh"
       - "./EDCB/healthcheck.sh:/var/local/edcb/healthcheck.sh"
     depends_on:
@@ -121,10 +122,10 @@ services:
     restart: always
     network_mode: host
     volumes:
-      - "./KonomiTV/config.yaml:/code/config.yaml"
       - "konomitv-data:/code/server/data/"
-      - "./Record/TV-Encoded:/host-rootfs/Record/TV-Encoded"
-      - "./Record/TV-Capture:/host-rootfs/Record/TV-Capture"
+      - "tv-record-data:/host-rootfs/Record/TV-Record"
+      - "tv-capture-data:/host-rootfs/Record/TV-Capture"
+      - "./KonomiTV/config.yaml:/code/config.yaml"
       - "./KonomiTV/healthcheck.sh:/code/server/healthcheck.sh"
     healthcheck:
       test: ["CMD", "/bin/sh", "healthcheck.sh"]
@@ -176,3 +177,26 @@ volumes:
     name: edcb-epg-data
   konomitv-data:
     name: konomitv-data
+  # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
+  tv-record-data:
+    name: tv-record-data
+    driver: local
+    driver_opts:
+      type: none
+      device: ./Record/TV-Record
+      o: bind
+  tv-encoded-data:
+    name: tv-encoded-data
+    driver: local
+    driver_opts:
+      type: none
+      device: ./Record/TV-Encoded
+      o: bind
+  tv-capture-data:
+    name: tv-capture-data
+    driver: local
+    driver_opts:
+      type: none
+      device: ./Record/TV-Capture
+      o: bind
+  # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================

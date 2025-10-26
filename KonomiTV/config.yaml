@@ -1,106 +1,93 @@
 #
 # ================================== 全般の設定 ==================================
 general:
+  # 利用するバックエンド
+  # EDCB・Mirakurun のいずれかを選択してください。
+  # バックエンドに Mirakurun が選択されているときは、録画予約機能は利用できません。
+  backend: "EDCB"
 
-    # 利用するバックエンド
-    # EDCB・Mirakurun のいずれかを選択してください。
-    # バックエンドに Mirakurun が選択されているときは、録画予約機能は利用できません。
-    backend: 'EDCB'
+  # 利用するバックエンドが EDCB のとき、常に Mirakurun / mirakc から放送波を受信するか
+  # バックエンドに Mirakurun が選択されているときは効果がありません。
+  # EDCB に加えて mirakurun_url で指定した Mirakurun / mirakc にアクセスできる必要があります。
+  # EDCB はチューナー起動やチャンネル切り替えに時間がかかるため、Mirakurun / mirakc が利用できる環境であれば、この設定を有効にするとより快適に使えます。
+  always_receive_tv_from_mirakurun: true
 
-    # 利用するバックエンドが EDCB のとき、常に Mirakurun / mirakc から放送波を受信するか
-    # バックエンドに Mirakurun が選択されているときは効果がありません。
-    # EDCB に加えて mirakurun_url で指定した Mirakurun / mirakc にアクセスできる必要があります。
-    # EDCB はチューナー起動やチャンネル切り替えに時間がかかるため、Mirakurun / mirakc が利用できる環境であれば、この設定を有効にするとより快適に使えます。
-    always_receive_tv_from_mirakurun: true
+  # EDCB (EpgTimerNW) の TCP API の URL
+  # バックエンドに EDCB が選択されているときに利用されます。
+  # tcp://edcb-namedpipe/ と指定すると、TCP API の代わりに名前付きパイプを使って通信します (ローカルのみ)。
+  # 一部 Windows 環境では localhost の名前解決が遅いため、ストリーミング開始までの待機時間が長くなる場合があります。
+  # EDCB と同じ PC に KonomiTV をインストールしている場合、localhost ではなく 127.0.0.1 の利用を推奨します。
+  edcb_url: "tcp://127.0.0.1:4510/"
 
-    # EDCB (EpgTimerNW) の TCP API の URL
-    # バックエンドに EDCB が選択されているときに利用されます。
-    # tcp://edcb-namedpipe/ と指定すると、TCP API の代わりに名前付きパイプを使って通信します (ローカルのみ)。
-    # 一部 Windows 環境では localhost の名前解決が遅いため、ストリーミング開始までの待機時間が長くなる場合があります。
-    # EDCB と同じ PC に KonomiTV をインストールしている場合、localhost ではなく 127.0.0.1 の利用を推奨します。
-    edcb_url: 'tcp://127.0.0.1:4510/'
+  # Mirakurun / mirakc の HTTP API の URL
+  # バックエンドに Mirakurun が選択されているときに利用されます。
+  # 一部 Windows 環境では localhost の名前解決が遅いため、ストリーミング開始までの待機時間が長くなる場合があります。
+  # Mirakurun / mirakc と同じ PC に KonomiTV をインストールしている場合、localhost ではなく 127.0.0.1 の利用を推奨します。
+  mirakurun_url: "http://127.0.0.1:40772/"
 
-    # Mirakurun / mirakc の HTTP API の URL
-    # バックエンドに Mirakurun が選択されているときに利用されます。
-    # 一部 Windows 環境では localhost の名前解決が遅いため、ストリーミング開始までの待機時間が長くなる場合があります。
-    # Mirakurun / mirakc と同じ PC に KonomiTV をインストールしている場合、localhost ではなく 127.0.0.1 の利用を推奨します。
-    mirakurun_url: 'http://127.0.0.1:40772/'
+  # 利用するエンコーダー
+  # FFmpeg・QSVEncC・NVEncC・VCEEncC・rkmppenc から選択してください。
+  # FFmpeg はソフトウェアエンコーダーです。すべての PC で利用できますが、CPU に多大な負荷がかかり、パフォーマンスが悪いです。
+  # QSVEncC・NVEncC・VCEEncC・rkmppenc はハードウェアエンコーダーです。CPU 負荷が低く、パフォーマンスがとても高いです（おすすめ）。
+  # Intel Graphics 搭載の Intel CPU をお使いなら、QSVEncC が使えます。
+  # Geforce などの NVIDIA GPU をお使いなら、NVEncC が使えます。
+  # Radeon などの AMD GPU をお使いなら、VCEEncC が使えます。
+  # RK3588 などの Rockchip SoC 搭載の ARM SBC をお使いなら、rkmppenc が使えます (いくつか事前設定が必要です) 。
+  encoder: "QSVEncC"
 
-    # 利用するエンコーダー
-    # FFmpeg・QSVEncC・NVEncC・VCEEncC・rkmppenc から選択してください。
-    # FFmpeg はソフトウェアエンコーダーです。すべての PC で利用できますが、CPU に多大な負荷がかかり、パフォーマンスが悪いです。
-    # QSVEncC・NVEncC・VCEEncC・rkmppenc はハードウェアエンコーダーです。CPU 負荷が低く、パフォーマンスがとても高いです（おすすめ）。
-    # Intel Graphics 搭載の Intel CPU をお使いなら、QSVEncC が使えます。
-    # Geforce などの NVIDIA GPU をお使いなら、NVEncC が使えます。
-    # Radeon などの AMD GPU をお使いなら、VCEEncC が使えます。
-    # RK3588 などの Rockchip SoC 搭載の ARM SBC をお使いなら、rkmppenc が使えます (いくつか事前設定が必要です) 。
-    encoder: 'QSVEncC'
+  # 番組情報の更新間隔 (分)
+  # 番組情報を EDCB または Mirakurun / mirakc から取得する間隔を設定します。デフォルトは 5 (分) です。
+  program_update_interval: 5.0
 
-    # 番組情報の更新間隔 (分)
-    # 番組情報を EDCB または Mirakurun / mirakc から取得する間隔を設定します。デフォルトは 5 (分) です。
-    program_update_interval: 5.0
+  # デバッグモードを有効にするか
+  # 有効にすると、デバッグログも出力されるようになります。
+  debug: false
 
-    # デバッグモードを有効にするか
-    # 有効にすると、デバッグログも出力されるようになります。
-    debug: false
-
-    # エンコーダーのログを有効にするか
-    # 有効にすると、エンコーダーのログが server/logs/KonomiTV-Encoder-(ストリームID).log に保存されます。
-    # さらにデバッグモードが有効のときは、デバッグログとしてリアルタイムにエンコーダーのログが出力されます。
-    debug_encoder: false
+  # エンコーダーのログを有効にするか
+  # 有効にすると、エンコーダーのログが server/logs/KonomiTV-Encoder-(ストリームID).log に保存されます。
+  # さらにデバッグモードが有効のときは、デバッグログとしてリアルタイムにエンコーダーのログが出力されます。
+  debug_encoder: false
 
 # ================================ サーバーの設定 ================================
 server:
+  # KonomiTV サーバーのリッスンポート
+  # デフォルトのリッスンポートは 7000 です。
+  port: 7000
 
-    # KonomiTV サーバーのリッスンポート
-    # デフォルトのリッスンポートは 7000 です。
-    port: 7000
-
-    # HTTPS リバースプロキシのカスタム HTTPS 証明書/秘密鍵ファイルへの絶対パス
-    # 設定すると、Akebi Keyless Server の代わりに、カスタム HTTPS 証明書を使って HTTPS リバースプロキシを開始します。
-    # カスタム HTTPS 証明書を有効化すると、https://192-168-x-xx.local.konomi.tv:7000/ の URL では KonomiTV にアクセスできなくなります。
-    # カスタム HTTPS 証明書を有効化するには、custom_https_certificate と custom_https_private_key の両方に設定が必要です。
-    # 基本的に変更する必要はありません。HTTPS 証明書について詳細に理解している方のみ設定してください。
-    custom_https_certificate: null
-    custom_https_private_key: null
+  # HTTPS リバースプロキシのカスタム HTTPS 証明書/秘密鍵ファイルへの絶対パス
+  # 設定すると、Akebi Keyless Server の代わりに、カスタム HTTPS 証明書を使って HTTPS リバースプロキシを開始します。
+  # カスタム HTTPS 証明書を有効化すると、https://192-168-x-xx.local.konomi.tv:7000/ の URL では KonomiTV にアクセスできなくなります。
+  # カスタム HTTPS 証明書を有効化するには、custom_https_certificate と custom_https_private_key の両方に設定が必要です。
+  # 基本的に変更する必要はありません。HTTPS 証明書について詳細に理解している方のみ設定してください。
+  custom_https_certificate: null
+  custom_https_private_key: null
 
 # ======================= テレビのライブストリーミングの設定 =======================
 tv:
+  # 誰も見ていないチャンネルのエンコードタスクを何秒まで維持するか
+  # 10 秒に設定したなら、10 秒間誰も見ていない状態が継続したらエンコードタスク（エンコーダー）を終了します。
+  # 0 秒に設定すると、ネット回線が瞬断したりリロードしただけでチューナーとエンコーダーの再起動が必要になり、
+  # 再生復帰までに時間がかかります。余裕をもたせておく事をおすすめします。
+  max_alive_time: 10
 
-    # 誰も見ていないチャンネルのエンコードタスクを何秒まで維持するか
-    # 10 秒に設定したなら、10 秒間誰も見ていない状態が継続したらエンコードタスク（エンコーダー）を終了します。
-    # 0 秒に設定すると、ネット回線が瞬断したりリロードしただけでチューナーとエンコーダーの再起動が必要になり、
-    # 再生復帰までに時間がかかります。余裕をもたせておく事をおすすめします。
-    max_alive_time: 10
-
-    # デバッグ用に再生する TS ファイルの絶対パス（デバッグ用設定のため、変更は推奨しない）
-    # この値に TS ファイルのパスを指定すると、すべてのチャンネルにおいて、ストリーミングされる映像（字幕・文字スーパーを含む）が
-    # リアルタイムで放送されているものから、指定した TS ファイルのものに強制的に置き換えられます。
-    # 開発者がライブストリーミング関連の機能をテストするために使う特殊なデバッグ用設定です。
-    debug_mode_ts_path: null
+  # デバッグ用に再生する TS ファイルの絶対パス（デバッグ用設定のため、変更は推奨しない）
+  # この値に TS ファイルのパスを指定すると、すべてのチャンネルにおいて、ストリーミングされる映像（字幕・文字スーパーを含む）が
+  # リアルタイムで放送されているものから、指定した TS ファイルのものに強制的に置き換えられます。
+  # 開発者がライブストリーミング関連の機能をテストするために使う特殊なデバッグ用設定です。
+  debug_mode_ts_path: null
 
 # ==================== ビデオのオンデマンドストリーミングの設定 ====================
 video:
-
-    # 録画済み番組の保存先フォルダの絶対パス
-    # 複数の保存先フォルダを指定できます。
-    # Docker でインストールした場合も、ホストマシン側のフォルダの絶対パスを指定してください。
-    recorded_folders: [
-        # '/TV-Record',
-        # '/TV-Record/succeeded',
-        # '/TV-Record/failed',
-        '/Record/TV-Encoded',
-    ]
-
+  # 録画済み番組の保存先フォルダの絶対パス
+  # 複数の保存先フォルダを指定できます。
+  # Docker でインストールした場合も、ホストマシン側のフォルダの絶対パスを指定してください。
+  recorded_folders: ["/Record/TV-Record"]
 
 # =============================== キャプチャの設定 ===============================
 capture:
-
-    # アップロードしたキャプチャ画像の保存先フォルダの絶対パス
-    # クライアントの [キャプチャの保存先] 設定で [KonomiTV サーバーにアップロード] または
-    # [ブラウザでのダウンロードと、KonomiTV サーバーへのアップロードを両方行う] が選択されているときに利用されます。
-    # 複数の保存先フォルダを指定できます。先頭から順に利用され、保存先フォルダがいっぱいになったら次の保存先フォルダに保存されます。
-    # Docker でインストールした場合も、ホストマシン側のフォルダの絶対パスを指定してください。
-    upload_folders: [
-        '/Record/TV-Capture',
-    ]
+  # アップロードしたキャプチャ画像の保存先フォルダの絶対パス
+  # クライアントの [キャプチャの保存先] 設定で [KonomiTV サーバーにアップロード] または
+  # [ブラウザでのダウンロードと、KonomiTV サーバーへのアップロードを両方行う] が選択されているときに利用されます。
+  # 複数の保存先フォルダを指定できます。先頭から順に利用され、保存先フォルダがいっぱいになったら次の保存先フォルダに保存されます。
+  # Docker でインストールした場合も、ホストマシン側のフォルダの絶対パスを指定してください。
+  upload_folders: ["/Record/TV-Capture"]

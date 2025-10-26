@@ -14,3 +14,6 @@
 [submodule "KonomiTV/KonomiTV"]
 	path = KonomiTV/KonomiTV
 	url = https://github.com/tsukumijima/KonomiTV
+[submodule "Amatsukaze/Amatsukaze"]
+	path = Amatsukaze/Amatsukaze
+	url = https://github.com/rigaya/Amatsukaze
