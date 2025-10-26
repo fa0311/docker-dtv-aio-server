@@ -4,24 +4,31 @@ services:
     container_name: ISDBScanner
     build:
       context: ./ISDBScanner
-    environment:
-      - EXCLUDE_PAY_TV=1
-    devices:
-      - /dev/bus:/dev/bus
-      - /dev/px4video0:/dev/px4video0
-      - /dev/px4video1:/dev/px4video1
-      - /dev/px4video2:/dev/px4video2
-      - /dev/px4video3:/dev/px4video3
-      - /dev/px4video4:/dev/px4video4
-      - /dev/px4video5:/dev/px4video5
-      - /dev/px4video6:/dev/px4video6
-      - /dev/px4video7:/dev/px4video7
     volumes:
       - ./Scanned:/app/Scanned
       - ./ISDBScanner/entrypoint.sh:/app/entrypoint.sh
-    command: ["/bin/bash", "/app/entrypoint.sh"]
+    command: ["/bin/sh", "/app/entrypoint.sh"]
     entrypoint: ""
     restart: "no"
+
+    # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
+    environment:
+      - EXCLUDE_PAY_TV=1 # 1 にすると有料放送を除外します
+    # 接続されている全てのデバイスにアクセスする必要があるため、特権モードを有効にする設定。
+    privileged: true
+    # セキュリティ上の都合で特権モードを利用したくない場合は
+    # ホストマシンに接続されている TV チューナーとカードリーダーのデバイスファイルを個別に指定してください。
+    # devices:
+    #   - /dev/bus:/dev/bus
+    #   - /dev/px4video0:/dev/px4video0
+    #   - /dev/px4video1:/dev/px4video1
+    #   - /dev/px4video2:/dev/px4video2
+    #   - /dev/px4video3:/dev/px4video3
+    #   - /dev/px4video4:/dev/px4video4
+    #   - /dev/px4video5:/dev/px4video5
+    #   - /dev/px4video6:/dev/px4video6
+    #   - /dev/px4video7:/dev/px4video7
+    # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
   mirakurun:
     image: mirakurun
@@ -31,19 +38,11 @@ services:
     ports:
       - "40772:40772"
       - "9229:9229"
-    devices:
-      - /dev/bus:/dev/bus
-      - /dev/px4video0:/dev/px4video0
-      - /dev/px4video1:/dev/px4video1
-      - /dev/px4video2:/dev/px4video2
-      - /dev/px4video3:/dev/px4video3
-      - /dev/px4video4:/dev/px4video4
-      - /dev/px4video5:/dev/px4video5
-      - /dev/px4video6:/dev/px4video6
-      - /dev/px4video7:/dev/px4video7
     volumes:
       - ./Scanned/Mirakurun/channels.yml:/app-config/channels.yml
       - ./Scanned/Mirakurun/tuners.yml:/app-config/tuners.yml
+      - ./Mirakurun/server.yml:/app-config/server.yml
+      - ./Mirakurun/healthcheck.sh:/app/healthcheck.sh
       - mirakurun-data:/app-data
     environment:
       TZ: Asia/Tokyo
@@ -54,7 +53,31 @@ services:
       isdb-scanner:
         condition: service_completed_successfully
     restart: always
-    
+    healthcheck:
+      test: ["CMD", "/bin/sh", "healthcheck.sh"]
+      interval: 5m
+      timeout: 2s
+      retries: 3
+      start_period: 1m
+      start_interval: 2s
+
+    # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
+    # 接続されている全てのデバイスにアクセスする必要があるため、特権モードを有効にする設定。
+    privileged: true
+    # セキュリティ上の都合で特権モードを利用したくない場合は
+    # ホストマシンに接続されている TV チューナーとカードリーダーのデバイスファイルを個別に指定してください。
+    # devices:
+    #   - /dev/bus:/dev/bus
+    #   - /dev/px4video0:/dev/px4video0
+    #   - /dev/px4video1:/dev/px4video1
+    #   - /dev/px4video2:/dev/px4video2
+    #   - /dev/px4video3:/dev/px4video3
+    #   - /dev/px4video4:/dev/px4video4
+    #   - /dev/px4video5:/dev/px4video5
+    #   - /dev/px4video6:/dev/px4video6
+    #   - /dev/px4video7:/dev/px4video7
+    # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
+
   edcb:
     image: edcb
     container_name: EDCB
@@ -71,27 +94,45 @@ services:
       - "./EDCB/EDCB_Config/EpgDataCap_Bon.ini:/var/local/edcb/EpgDataCap_Bon.ini"
       - "./EDCB/EDCB_Config/EpgTimerSrv.ini:/var/local/edcb/EpgTimerSrv.ini"
       - "./EDCB/EDCB_Config/RecEnd.sh:/var/local/edcb/RecEnd.sh"
+      - "./EDCB/healthcheck.sh:/var/local/edcb/healthcheck.sh"
     depends_on:
-      - mirakurun
+      mirakurun:
+        condition: service_healthy
     restart: always
     network_mode: host
-
+    healthcheck:
+      test: ["CMD", "/bin/sh", "healthcheck.sh"]
+      interval: 5m
+      timeout: 2s
+      retries: 3
+      start_period: 1m
+      start_interval: 2s
 
   konomitv:
     image: konomitv
     container_name: KonomiTV
     build:
-      context: ./KonomiTV
+      context: ./KonomiTV/KonomiTV
     depends_on:
-      - mirakurun
-      - edcb
+      mirakurun:
+        condition: service_healthy
+      edcb:
+        condition: service_healthy
     restart: always
     network_mode: host
     volumes:
-      - './KonomiTV/config.yaml:/code/config.yaml'
-      - 'konomitv-data:/code/server/data/'
-      - './Record/TV-Encoded:/host-rootfs/Record/TV-Encoded'
-      - './Record/TV-Capture:/host-rootfs/Record/TV-Capture'
+      - "./KonomiTV/config.yaml:/code/config.yaml"
+      - "konomitv-data:/code/server/data/"
+      - "./Record/TV-Encoded:/host-rootfs/Record/TV-Encoded"
+      - "./Record/TV-Capture:/host-rootfs/Record/TV-Capture"
+      - "./KonomiTV/healthcheck.sh:/code/server/healthcheck.sh"
+    healthcheck:
+      test: ["CMD", "/bin/sh", "healthcheck.sh"]
+      interval: 5m
+      timeout: 2s
+      retries: 3
+      start_period: 1m
+      start_interval: 2s
 
     # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
     # QSVEncC / VCEEncC を利用する (Intel Graphics / AMD GPU にアクセスする) ために必要な設定
@@ -99,7 +140,7 @@ services:
     # GPU が1個も搭載されていない (/dev/dri/ 以下のデバイスファイルが存在しない) 特殊な環境では、
     # コメントアウトしてこの設定を無効にしないと、KonomiTV サーバーを起動できなくなります。
     devices:
-      - '/dev/dri/:/dev/dri/'
+      - "/dev/dri/:/dev/dri/"
     # NVEncC を利用する (NVIDIA GPU にアクセスする) ために必要な設定
     # NVEncC (NVIDIA GPU) を利用するには、別途 NVIDIA Graphics Driver と
     # NVIDIA Container Toolkit のインストールが必要です。
@@ -113,16 +154,25 @@ services:
     #           capabilities: [compute, utility, video]
     # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
-
+  # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
+  # NFS で共有するディレクトリを指定します。
+  # 不要であれば、このサービス定義ごと削除してください。
+  nfs:
+    image: itsthenetwork/nfs-server-alpine:latest
+    container_name: nfs
+    privileged: true
+    network_mode: host
+    environment:
+      - SHARED_DIRECTORY=/export/share
+    volumes:
+      - ./Record:/export/share:rw
+    restart: unless-stopped
+  # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
 volumes:
   mirakurun-data:
-   name: mirakurun-data
+    name: mirakurun-data
   edcb-epg-data:
     name: edcb-epg-data
   konomitv-data:
     name: konomitv-data
-
-
-
-    

@@ -1,0 +1,8 @@
+{
+  "[yaml][jsonc[[json][markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[dockercompose]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

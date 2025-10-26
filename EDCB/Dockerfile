@@ -54,7 +54,8 @@ RUN apt-get update && \
     liblua5.2-0 \
     lua-zlib \
     ffmpeg \
-    ca-certificates && \
+    ca-certificates \
+    curl && \
     rm -rf /var/lib/apt/lists/*
 
 # ビルドステージから必要なファイルをコピー
