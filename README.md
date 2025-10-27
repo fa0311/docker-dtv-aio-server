@@ -6,6 +6,10 @@ Docker を使用した日本のデジタルテレビ放送受信・録画・ス�
 
 このプロジェクトは、複数の DTV 関連ソフトウェアを Docker コンテナで統合し、簡単にセットアップ・管理できる環境を提供します。
 
+## 設計思想
+
+`docker compose` で全て完結するセキュアで簡単なセットアップを目指します。
+
 ## セットアップ
 
 ホストマシンの IP アドレスが `192.168.1.1` の場合の例を示します。
@@ -19,7 +23,7 @@ Docker を使用した日本のデジタルテレビ放送受信・録画・ス�
 - TV チューナーに対応するドライバがホストマシンにインストールされていることを確認してください。
 - カードリーダーがホストマシンに接続されていることを確認してください。
 
-### 2. リポジトリのクローン
+### 2. セットアップ
 
 ```bash
 git clone --recursive https://github.com/fa0311/docker-dtv-aio-server.git
@@ -31,16 +35,20 @@ docker compose up -d --wait
 
 ### 3. 設定のカスタマイズ
 
-- `docker-compose.yml` 内の環境変数を編集して、設定をカスタマイズできます。
+- `docker-compose.yml` を編集して、設定をカスタマイズします。
 - <http://192.168.70.3:5510/legacy/setting_bon.html> にアクセスして、ホストマシンに接続されている TV チューナーの設定を行います。
 
 ## アクセス方法
 
 起動後、以下の URL でアクセスできます。
 
-- **KonomiTV**: `https://192-168-1-1.local.konomi.tv:7000/tv/`
+- **KonomiTV**: `https://192-168-1-1.local.konomi.tv:7000/`
 - **Mirakurun**: `http://192.168.1.1:40772`
 - **EDCB Material WebUI**: `http://192.168.1.1:5510`
+- **Amatsukaze**: `http://192.168.1.1:32768`
+- **Web Server**: `http://192.168.1.1:8080`
+- **NFS**: `192.168.1.1` `nfsvers=4`
+- **SMB**: `\\192.168.1.1\shares` `admin:password`
 
 ### 謝辞
 

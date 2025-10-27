@@ -1,5 +1,5 @@
-#!/bin/sh
-set -eu
+#!/bin/bash
+set -euo pipefail
 
 FLAG_FILE="/app/Scanned/.done"
 
@@ -22,6 +22,4 @@ else
 fi
 
 echo "[ISDBScanner] Initial scan completed."
-
-
 touch "$FLAG_FILE"

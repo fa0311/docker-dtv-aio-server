@@ -44,9 +44,29 @@ RUN cp BonDriver_LinuxMirakc.so /usr/local/lib/edcb/BonDriver_LinuxMirakc_T.so &
 RUN cp BonDriver_LinuxMirakc.so /usr/local/lib/edcb/BonDriver_LinuxMirakc_S.so && \
     cp BonDriver_LinuxMirakc.so.ini_sample /usr/local/lib/edcb/BonDriver_LinuxMirakc_S.so.ini
 
+# AmatsukazeAddTaskを取得ステージ
+FROM alpine:3.20 AS fetch
+
+RUN apk add --no-cache ca-certificates curl jq xz tar
+
+ENV UBUNTU_VERSION=24.04
+WORKDIR /work
+
+RUN curl -fsSL https://api.github.com/repos/rigaya/Amatsukaze/releases/latest \
+    | jq -r '.assets[].browser_download_url' \
+    | grep "Ubuntu${UBUNTU_VERSION}.*tar.xz" \
+    | head -n1 > url.txt
+
+RUN set -eux; \
+    URL="$(cat url.txt)"; \
+    test -n "$URL"; \
+    curl -fSL "$URL" -o amatsukaze.tar.xz
+
+RUN mkdir -p /out \
+    && xz -dc amatsukaze.tar.xz | tar -x -C /out
 
 # ランタイムステージ
-FROM debian:bookworm-slim AS runtime
+FROM ubuntu:24.04 AS runtime
 
 # ランタイム依存パッケージのみインストール
 RUN apt-get update && \
@@ -66,6 +86,10 @@ COPY --from=builder /var/local/edcb/ /var/local/edcb/
 # EDCBの作業ディレクトリを作成してパーミッション設定
 RUN mkdir -p /var/local/edcb && \
     chmod 777 /var/local/edcb
+
+
+# AmatsukazeAddTaskを取得ステージからコピー
+COPY --from=fetch /out/exe_files/AmatsukazeAddTask /usr/local/bin/
 
 # 作業ディレクトリを設定
 WORKDIR /var/local/edcb

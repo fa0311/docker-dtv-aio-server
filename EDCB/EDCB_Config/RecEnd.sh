@@ -1,3 +1,4 @@
-#!/bin/sh
+#!/bin/bash
+#!_EDCBX_DIRECT_
 
-echo "RecEnd.sh executed" >> /var/local/edcb/RecEnd.log
+AmatsukazeAddTask -url http://amatsukaze:32769 -s デフォルト -f "/Record/TV-Record/${FileName}.ts" -o "/Record/TV-Encoded"
