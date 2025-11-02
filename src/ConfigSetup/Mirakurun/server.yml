@@ -1,4 +1,4 @@
 logLevel: 2
-path: /var/run/mirakurun.sock
+path: /var/run/mirakurun/mirakurun.sock
 port: 40772
 epgGatheringJobSchedule: 45 5,11,17 * * *

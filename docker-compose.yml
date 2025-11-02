@@ -66,13 +66,15 @@ services:
       context: ./src/Mirakurun
     ports:
       - 40772:40772
-      - 9229:9229
+    expose:
+      - 9229
     volumes:
       - ./config/Scanned/Mirakurun/channels.yml:/app-config/channels.yml:ro
       - ./config/Scanned/Mirakurun/tuners.yml:/app-config/tuners.yml:ro
       - ./config/Mirakurun/server.yml:/app-config/server.yml
       - ./src/Mirakurun/healthcheck.sh:/app/healthcheck.sh:ro
       - mirakurun-data:/app-data
+      - mirakurun-socket:/var/run/mirakurun
     environment:
       TZ: Asia/Tokyo
     depends_on:
@@ -111,6 +113,10 @@ services:
     container_name: EDCB
     build:
       context: ./src/EDCB
+    ports:
+      - "5510:5510"
+    expose:
+      - 4510
     volumes:
       - edcb-epg-data:/var/local/edcb/Setting
       - tv-record-data:/record/TV-Record
@@ -124,13 +130,13 @@ services:
       - ./config/EDCB/bat:/var/local/edcb/bat
       - ./config/EDCB/RecEnd.sh:/var/local/edcb/RecEnd.sh:ro
       - ./src/EDCB/healthcheck.sh:/var/local/edcb/healthcheck.sh:ro
+      - mirakurun-socket:/var/run/mirakurun
     depends_on:
       mirakurun:
         condition: service_healthy
       config-setup:
         condition: service_completed_successfully
     restart: unless-stopped
-    network_mode: host
     healthcheck:
       test: [CMD, /bin/bash, healthcheck.sh]
       interval: 5m
@@ -144,17 +150,21 @@ services:
     container_name: EDCBFetcher
     build:
       context: ./src/EDCBFetcher
+    environment:
+      - BASE_URL=http://edcb:5510
+      - SKIP_EPG_RELOAD=1
     depends_on:
       edcb:
         condition: service_healthy
     restart: no
-    network_mode: host
 
   konomitv:
     image: konomitv
     container_name: KonomiTV
     build:
       context: ./src/KonomiTV/KonomiTV
+    ports:
+      - 7000:7000
     depends_on:
       mirakurun:
         condition: service_healthy
@@ -165,7 +175,6 @@ services:
       config-setup:
         condition: service_completed_successfully
     restart: unless-stopped
-    network_mode: host
     volumes:
       - konomitv-data:/code/server/data/
       - tv-record-data:/host-rootfs/record/TV-Record
@@ -315,6 +324,8 @@ services:
 volumes:
   mirakurun-data:
     name: mirakurun-data
+  mirakurun-socket:
+    name: mirakurun-socket
   edcb-epg-data:
     name: edcb-epg-data
   konomitv-data:

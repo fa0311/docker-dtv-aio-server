@@ -53,14 +53,17 @@ class EPGClient:
 def main():
     client = EPGClient(interval=5, base_url=os.getenv("BASE_URL", "http://127.0.0.1:5510"))
     print("⏳ EPGデータ取得中...")
+    skip_epg = os.getenv("SKIP_EPG_RELOAD") == "1" or os.getenv("SKIP_EPG_RELOAD") == "true"
+    ready = client.check_epg_ready()
 
-    text = client.find_and_submit_form("epgcap")
-    if "EPG取得を開始しました" in text:
-        print(f"✅ {text}")
-    else:
-        raise SystemExit(f"❌ {text}")
+    if not skip_epg or not ready:
+        text = client.find_and_submit_form("epgcap")
+        if "EPG取得を開始しました" in text:
+            print(f"✅ {text}")
+        else:
+            raise SystemExit(f"❌ {text}")
 
-    if not client.check_epg_ready():
+    if not ready:
         text = client.find_and_submit_form("epgreload")
         if "EPG再読み込みを開始しました" in text:
             print(f"✅ {text}")

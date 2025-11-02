@@ -17,3 +17,6 @@
 [submodule "src/Amatsukaze/Amatsukaze"]
 	path = src/Amatsukaze/Amatsukaze
 	url = https://github.com/rigaya/Amatsukaze
+[submodule "src/Mirakurun/Mirakurun"]
+	path = src/Mirakurun/Mirakurun
+	url = https://github.com/fa0311/Mirakurun

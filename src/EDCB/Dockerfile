@@ -37,12 +37,13 @@ WORKDIR /tmp/BonDriver_LinuxMirakc
 RUN make -j "$(nproc)"
 
 # BonDriver_LinuxMirakcをインストール
-RUN cp BonDriver_LinuxMirakc.so /usr/local/lib/edcb/BonDriver_LinuxMirakc.so && \
-    cp BonDriver_LinuxMirakc.so.ini_sample /usr/local/lib/edcb/BonDriver_LinuxMirakc.so.ini
-RUN cp BonDriver_LinuxMirakc.so /usr/local/lib/edcb/BonDriver_LinuxMirakc_T.so && \
-    cp BonDriver_LinuxMirakc.so.ini_sample /usr/local/lib/edcb/BonDriver_LinuxMirakc_T.so.ini
-RUN cp BonDriver_LinuxMirakc.so /usr/local/lib/edcb/BonDriver_LinuxMirakc_S.so && \
-    cp BonDriver_LinuxMirakc.so.ini_sample /usr/local/lib/edcb/BonDriver_LinuxMirakc_S.so.ini
+RUN cp BonDriver_LinuxMirakc.so /usr/local/lib/edcb/BonDriver_LinuxMirakc.so
+RUN cp BonDriver_LinuxMirakc.so /usr/local/lib/edcb/BonDriver_LinuxMirakc_T.so
+RUN cp BonDriver_LinuxMirakc.so /usr/local/lib/edcb/BonDriver_LinuxMirakc_S.so
+
+COPY ./BonDriver_LinuxMirakc.so.example.ini /usr/local/lib/edcb/BonDriver_LinuxMirakc.so.ini
+COPY ./BonDriver_LinuxMirakc.so.example.ini /usr/local/lib/edcb/BonDriver_LinuxMirakc_T.so.ini
+COPY ./BonDriver_LinuxMirakc.so.example.ini /usr/local/lib/edcb/BonDriver_LinuxMirakc_S.so.ini
 
 # AmatsukazeAddTaskを取得ステージ
 FROM alpine:3.20 AS fetch
