@@ -1,7 +1,8 @@
+import os
 import time
+
 import requests
 from bs4 import BeautifulSoup
-import os
 
 
 class EPGClient:
@@ -16,15 +17,21 @@ class EPGClient:
         r.raise_for_status()
         soup = BeautifulSoup(r.text, "html.parser")
         return soup.find_all("form")
+    
+    def __form_action(self, url: str, data: dict):
+        r = self.session.post(url, data=data, timeout=2)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
+        return soup.select_one("#result")
 
     def find_and_submit_form(self, name, value="y"):
+        url = f"{self.base_url}/legacy"
         for form in self._get_forms():
             if form.find("input", attrs={"name": name, "value": value}):
                 ctok = form.find("input", attrs={"name": "ctok"})["value"]
-                action = form.get("action") or "index.html"
-                action = f"{self.base_url}/legacy/{action}"
-                self.session.post(action, data={"ctok": ctok, name: value}, timeout=2).raise_for_status()
-                return
+                action = form.get("action") or ""
+                res = self.__form_action(f"{url}/{action}", data={"ctok": ctok, name: value})
+                return res.text
         raise SystemExit(f"❌ フォームが見つかりません: {name}")
 
     
@@ -46,11 +53,19 @@ class EPGClient:
 def main():
     client = EPGClient(interval=5, base_url=os.getenv("BASE_URL", "http://127.0.0.1:5510"))
     print("⏳ EPGデータ取得中...")
-    client.find_and_submit_form("epgcap")
-    print("✅ EGP取得を開始しました。")
+
+    text = client.find_and_submit_form("epgcap")
+    if "EPG取得を開始しました" in text:
+        print(f"✅ {text}")
+    else:
+        raise SystemExit(f"❌ {text}")
+
     if not client.check_epg_ready():
-        client.find_and_submit_form("epgreload")
-        print("✅ EGP再読み込みを開始しました。")
+        text = client.find_and_submit_form("epgreload")
+        if "EPG再読み込みを開始しました" in text:
+            print(f"✅ {text}")
+        else:
+            raise SystemExit(f"❌ {text}")
     client.wait_until_epg_ready()
     print("✅ EPGデータ取得完了")
 

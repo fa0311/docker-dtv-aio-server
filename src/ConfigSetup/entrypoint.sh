@@ -29,7 +29,6 @@ mkdir -p ./config/KonomiTV
 cp -r ./ConfigSetup/KonomiTV/config.yaml ./config/KonomiTV/config.yaml
 
 # Amatsukaze設定ファイルの準備
-
 cd ./Amatsukaze/docker
 /bin/bash ./setup.sh
 cd ../../
@@ -47,6 +46,10 @@ cp -r ./Amatsukaze/docker/bat/* ./config/Amatsukaze/bat
 cp -r ./Amatsukaze/docker/profile/* ./config/Amatsukaze/profile
 cp -r ./Amatsukaze/docker/drcs/* ./config/Amatsukaze/drcs
 cp -r ./Amatsukaze/docker/JL/* ./config/Amatsukaze/JL
+
+# Mirakurun設定ファイルの準備
+mkdir -p ./config/Mirakurun
+cp -r ./ConfigSetup/Mirakurun/server.yml ./config/Mirakurun/server.yml
 
 # 完了
 echo "[ConfigSetup] Setup completed."

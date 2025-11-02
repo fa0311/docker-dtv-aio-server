@@ -6,7 +6,6 @@ services:
       context: ./src/ISDBScanner
     volumes:
       - ./config/Scanned:/app/Scanned
-      - ./src/ISDBScanner/EpgTimerSrv.template.ini:/app/EpgTimerSrv.template.ini:ro
       - ./src/ISDBScanner/entrypoint.sh:/app/entrypoint.sh:ro
     command: [/bin/bash, /app/entrypoint.sh]
     entrypoint: ""
@@ -43,6 +42,23 @@ services:
         condition: service_completed_successfully
     restart: no
 
+    # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
+    # 接続されている全てのデバイスにアクセスする必要があるため、特権モードを有効にする設定。
+    privileged: true
+    # セキュリティ上の都合で特権モードを利用したくない場合は
+    # ホストマシンに接続されている TV チューナーとカードリーダーのデバイスファイルを個別に指定してください。
+    # devices:
+    #   - /dev/bus:/dev/bus
+    #   - /dev/px4video0:/dev/px4video0
+    #   - /dev/px4video1:/dev/px4video1
+    #   - /dev/px4video2:/dev/px4video2
+    #   - /dev/px4video3:/dev/px4video3
+    #   - /dev/px4video4:/dev/px4video4
+    #   - /dev/px4video5:/dev/px4video5
+    #   - /dev/px4video6:/dev/px4video6
+    #   - /dev/px4video7:/dev/px4video7
+    # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
+
   mirakurun:
     image: mirakurun
     container_name: Mirakurun
@@ -54,12 +70,15 @@ services:
     volumes:
       - ./config/Scanned/Mirakurun/channels.yml:/app-config/channels.yml:ro
       - ./config/Scanned/Mirakurun/tuners.yml:/app-config/tuners.yml:ro
+      - ./config/Mirakurun/server.yml:/app-config/server.yml
       - ./src/Mirakurun/healthcheck.sh:/app/healthcheck.sh:ro
       - mirakurun-data:/app-data
     environment:
       TZ: Asia/Tokyo
     depends_on:
       isdb-scanner:
+        condition: service_completed_successfully
+      config-setup:
         condition: service_completed_successfully
     restart: unless-stopped
     healthcheck:

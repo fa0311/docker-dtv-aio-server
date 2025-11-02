@@ -33,14 +33,14 @@ docker compose build && docker compose up -d --wait && docker compose rm -f
 sudo chown -R $UID:$GID .
 ```
 
-初回起動はチャンネルスキャンを行うため時間がかかります。
+初回起動はチャンネルスキャン, EPG 取得を行うため時間がかかります。
 
 ### 3. 設定のカスタマイズ
 
 - `docker-compose.yml` を編集して、設定をカスタマイズします。
 - <http://192.168.70.3:5510/legacy/setting_bon.html> にアクセスして、ホストマシンに接続されている TV チューナーの設定を行います。
 
-## アクセス方法
+### アクセス方法
 
 起動後、以下の URL でアクセスできます。
 
@@ -60,6 +60,7 @@ sudo chown -R $UID:$GID .
 - ログ確認: `docker compose logs -f`
 - 状態確認: `docker compose ps`
 - 滅びの呪文: `docker compose down --rmi all --volumes --remove-orphans && git clean -xdf`
+- 未使用データ一括削除: `docker system prune`
 
 ### 謝辞
 
