@@ -1,13 +1,4 @@
 services:
-  config-setup:
-    image: config-setup
-    container_name: ConfigSetup
-    build:
-      context: ./src
-    volumes:
-      - ./config:/app/config
-    restart: no
-
   isdb-scanner:
     image: isdb-scanner
     container_name: ISDBScanner
@@ -39,6 +30,18 @@ services:
     #   - /dev/px4video6:/dev/px4video6
     #   - /dev/px4video7:/dev/px4video7
     # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
+
+  config-setup:
+    image: config-setup
+    container_name: ConfigSetup
+    build:
+      context: ./src
+    volumes:
+      - ./config:/app/config
+    depends_on:
+      isdb-scanner:
+        condition: service_completed_successfully
+    restart: no
 
   mirakurun:
     image: mirakurun
