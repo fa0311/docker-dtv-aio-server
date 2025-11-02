@@ -8,7 +8,8 @@ Docker を使用した日本のデジタルテレビ放送受信・録画・ス�
 
 ## 設計思想
 
-`docker compose` で全て完結するセキュアで簡単なセットアップを目指します。
+- `docker compose` で全て完結するセキュアで簡単なセットアップを目指します。
+- 宣言的な設定管理を重視し、環境の再現性を高めます。
 
 ## セットアップ
 
@@ -28,7 +29,8 @@ Docker を使用した日本のデジタルテレビ放送受信・録画・ス�
 ```bash
 git clone --recursive https://github.com/fa0311/docker-dtv-aio-server.git
 cd docker-dtv-aio-server
-docker compose up -d --wait
+docker compose build && docker compose up -d --wait && docker compose rm -f
+sudo chown -R $UID:$GID .
 ```
 
 初回起動はチャンネルスキャンを行うため時間がかかります。
@@ -49,6 +51,15 @@ docker compose up -d --wait
 - **Web Server**: `http://192.168.1.1:8080`
 - **NFS**: `192.168.1.1` `nfsvers=4`
 - **SMB**: `\\192.168.1.1\shares` `admin:password`
+
+## チートシート
+
+- 停止: `docker compose down`
+- 起動: `docker compose up -d --wait`
+- 再起動: `docker compose restart`
+- ログ確認: `docker compose logs -f`
+- 状態確認: `docker compose ps`
+- 滅びの呪文: `docker compose down --rmi all --volumes --remove-orphans && git clean -xdf`
 
 ### 謝辞
 

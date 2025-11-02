@@ -1,12 +1,22 @@
 services:
+  config-setup:
+    image: config-setup
+    container_name: ConfigSetup
+    build:
+      context: ./src
+    volumes:
+      - ./config:/app/config
+    restart: no
+
   isdb-scanner:
     image: isdb-scanner
     container_name: ISDBScanner
     build:
-      context: ./ISDBScanner
+      context: ./src/ISDBScanner
     volumes:
-      - ./Scanned:/app/Scanned
-      - ./ISDBScanner/entrypoint.sh:/app/entrypoint.sh:ro
+      - ./config/Scanned:/app/Scanned
+      - ./src/ISDBScanner/EpgTimerSrv.template.ini:/app/EpgTimerSrv.template.ini:ro
+      - ./src/ISDBScanner/entrypoint.sh:/app/entrypoint.sh:ro
     command: [/bin/bash, /app/entrypoint.sh]
     entrypoint: ""
     restart: no
@@ -34,15 +44,14 @@ services:
     image: mirakurun
     container_name: Mirakurun
     build:
-      context: ./Mirakurun
+      context: ./src/Mirakurun
     ports:
       - 40772:40772
       - 9229:9229
     volumes:
-      - ./Scanned/Mirakurun/channels.yml:/app-config/channels.yml:ro
-      - ./Scanned/Mirakurun/tuners.yml:/app-config/tuners.yml:ro
-      - ./Mirakurun/server.yml:/app-config/server.yml
-      - ./Mirakurun/healthcheck.sh:/app/healthcheck.sh:ro
+      - ./config/Scanned/Mirakurun/channels.yml:/app-config/channels.yml:ro
+      - ./config/Scanned/Mirakurun/tuners.yml:/app-config/tuners.yml:ro
+      - ./src/Mirakurun/healthcheck.sh:/app/healthcheck.sh:ro
       - mirakurun-data:/app-data
     environment:
       TZ: Asia/Tokyo
@@ -79,23 +88,25 @@ services:
     image: edcb
     container_name: EDCB
     build:
-      context: ./EDCB
+      context: ./src/EDCB
     volumes:
       - edcb-epg-data:/var/local/edcb/Setting
-      - tv-record-data:/Record/TV-Record
-      - ./Scanned/EDCB-Wine/BonDriver_mirakc_S(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc_S(LinuxMirakc).ChSet4.txt:ro
-      - ./Scanned/EDCB-Wine/BonDriver_mirakc_T(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc_T(LinuxMirakc).ChSet4.txt:ro
-      - ./Scanned/EDCB-Wine/BonDriver_mirakc(BonDriver_mirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc(LinuxMirakc).ChSet4.txt:ro
-      - ./Scanned/EDCB-Wine/ChSet5.txt:/var/local/edcb/Setting/ChSet5.txt:ro
-      - ./EDCB/EDCB_Config/Common.ini:/var/local/edcb/Common.ini
-      - ./EDCB/EDCB_Config/EpgDataCap_Bon.ini:/var/local/edcb/EpgDataCap_Bon.ini
-      - ./EDCB/EDCB_Config/EpgTimerSrv.ini:/var/local/edcb/EpgTimerSrv.ini
-      - ./EDCB/EDCB_Config/bat:/var/local/edcb/bat
-      - ./EDCB/EDCB_Config/RecEnd.sh:/var/local/edcb/RecEnd.sh:ro
-      - ./EDCB/healthcheck.sh:/var/local/edcb/healthcheck.sh:ro
+      - tv-record-data:/record/TV-Record
+      - ./config/Scanned/EDCB/BonDriver_LinuxMirakc_S(LinuxMirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc_S(LinuxMirakc).ChSet4.txt:ro
+      - ./config/Scanned/EDCB/BonDriver_LinuxMirakc_T(LinuxMirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc_T(LinuxMirakc).ChSet4.txt:ro
+      - ./config/Scanned/EDCB/BonDriver_LinuxMirakc(LinuxMirakc).ChSet4.txt:/var/local/edcb/Setting/BonDriver_LinuxMirakc(LinuxMirakc).ChSet4.txt:ro
+      - ./config/Scanned/EDCB/ChSet5.txt:/var/local/edcb/Setting/ChSet5.txt:ro
+      - ./config/EDCB/Common.ini:/var/local/edcb/Common.ini
+      - ./config/EDCB/EpgDataCap_Bon.ini:/var/local/edcb/EpgDataCap_Bon.ini
+      - ./config/EDCB/EpgTimerSrv.ini:/var/local/edcb/EpgTimerSrv.ini
+      - ./config/EDCB/bat:/var/local/edcb/bat
+      - ./config/EDCB/RecEnd.sh:/var/local/edcb/RecEnd.sh:ro
+      - ./src/EDCB/healthcheck.sh:/var/local/edcb/healthcheck.sh:ro
     depends_on:
       mirakurun:
         condition: service_healthy
+      config-setup:
+        condition: service_completed_successfully
     restart: unless-stopped
     network_mode: host
     healthcheck:
@@ -106,24 +117,40 @@ services:
       start_period: 1m
       start_interval: 2s
 
+  edcb-fetcher:
+    image: edcb-fetcher
+    container_name: EDCBFetcher
+    build:
+      context: ./src/EDCBFetcher
+    depends_on:
+      edcb:
+        condition: service_healthy
+    restart: no
+    network_mode: host
+
   konomitv:
     image: konomitv
     container_name: KonomiTV
     build:
-      context: ./KonomiTV/KonomiTV
+      context: ./src/KonomiTV/KonomiTV
     depends_on:
       mirakurun:
         condition: service_healthy
       edcb:
         condition: service_healthy
+      edcb-fetcher:
+        condition: service_completed_successfully
+      config-setup:
+        condition: service_completed_successfully
     restart: unless-stopped
     network_mode: host
     volumes:
       - konomitv-data:/code/server/data/
-      - tv-encoded-data:/host-rootfs/Record/TV-Encoded
-      - tv-capture-data:/host-rootfs/Record/TV-Capture
-      - ./KonomiTV/config.yaml:/code/config.yaml
-      - ./KonomiTV/healthcheck.sh:/code/server/healthcheck.sh:so
+      - tv-record-data:/host-rootfs/record/TV-Record
+      - tv-encoded-data:/host-rootfs/record/TV-Encode
+      - tv-capture-data:/host-rootfs/record/TV-Capture
+      - ./config/KonomiTV/config.yaml:/code/config.yaml
+      - ./src/KonomiTV/healthcheck.sh:/code/server/healthcheck.sh:so
     healthcheck:
       test: [CMD, /bin/bash, healthcheck.sh]
       interval: 5m
@@ -152,20 +179,11 @@ services:
   #           capabilities: [compute, utility, video]
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
-  amatsukaze-setup:
-    image: amatsukaze-setup
-    container_name: AmatsukazeSetup
-    build:
-      context: Amatsukaze
-    volumes:
-      - ./Amatsukaze/data:/data
-    restart: no
-
   amatsukaze:
     image: amatsukaze
     container_name: Amatsukaze
     build:
-      context: Amatsukaze/Amatsukaze/docker
+      context: ./src/Amatsukaze/Amatsukaze/docker
     restart: unless-stopped
     ports:
       - "32768:32768"
@@ -173,19 +191,19 @@ services:
       - RUN_UID=1000
       - RUN_GID=1000
     volumes:
-      - ./Amatsukaze/data/avs:/app/avs
-      - ./Amatsukaze/data/bat:/app/bat
-      - ./Amatsukaze/data/drcs:/app/drcs
-      - ./Amatsukaze/data/JL:/app/JL
-      - ./Amatsukaze/data/logo:/app/logo
-      - ./Amatsukaze/data/profile:/app/profile
-      - ./Amatsukaze/healthcheck.sh:/healthcheck.sh
+      - ./config/Amatsukaze/data/avs:/app/avs
+      - ./config/Amatsukaze/data/bat:/app/bat
+      - ./config/Amatsukaze/data/drcs:/app/drcs
+      - ./config/Amatsukaze/data/JL:/app/JL
+      - ./config/Amatsukaze/data/logo:/app/logo
+      - ./config/Amatsukaze/data/profile:/app/profile
+      - ./src/Amatsukaze/healthcheck.sh:/healthcheck.sh
       - amatsukaze-data:/app/data
       - amatsukaze-config:/app/config
-      - tv-record-data:/Record/TV-Record
-      - tv-encoded-data:/Record/TV-Encoded
+      - tv-record-data:/record/TV-Record
+      - tv-encoded-data:/record/TV-Encode
     depends_on:
-      amatsukaze-setup:
+      config-setup:
         condition: service_completed_successfully
     healthcheck:
       test: [CMD, /bin/bash, /healthcheck.sh]
@@ -224,11 +242,11 @@ services:
     container_name: nfs-server
     environment:
       - TZ=Asia/Tokyo
-      - SHARED_DIRECTORY=/shares
+      - SHARED_DIRECTORY=/export/share
     volumes:
-      - tv-record-data:/shares/TV-Record
-      - tv-encoded-data:/shares/TV-Encoded
-      - tv-capture-data:/shares/TV-Capture
+      - tv-record-data:/export/share/TV-Record
+      - tv-encoded-data:/export/share/TV-Encode
+      - tv-capture-data:/export/share/TV-Capture
     privileged: true
     restart: unless-stopped
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
@@ -250,7 +268,7 @@ services:
       WORKGROUP: "WORKGROUP"
     volumes:
       - tv-record-data:/shares/TV-Record
-      - tv-encoded-data:/shares/TV-Encoded
+      - tv-encoded-data:/shares/TV-Encode
       - tv-capture-data:/shares/TV-Capture
     restart: unless-stopped
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
@@ -266,9 +284,9 @@ services:
       - "8080:80"
     volumes:
       - tv-record-data:/srv/www/TV-Record:ro
-      - tv-encoded-data:/srv/www/TV-Encoded:ro
+      - tv-encoded-data:/srv/www/TV-Encode:ro
       - tv-capture-data:/srv/www/TV-Capture:ro
-      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./src/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
     restart: unless-stopped
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
@@ -289,20 +307,20 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: ./Record/TV-Record
+      device: ./record/TV-Record
       o: bind
   tv-encoded-data:
     name: tv-encoded-data
     driver: local
     driver_opts:
       type: none
-      device: ./Record/TV-Encoded
+      device: ./record/TV-Encode
       o: bind
   tv-capture-data:
     name: tv-capture-data
     driver: local
     driver_opts:
       type: none
-      device: ./Record/TV-Capture
+      device: ./record/TV-Capture
       o: bind
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================

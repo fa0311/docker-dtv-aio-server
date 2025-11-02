@@ -10,7 +10,7 @@ general:
   # バックエンドに Mirakurun が選択されているときは効果がありません。
   # EDCB に加えて mirakurun_url で指定した Mirakurun / mirakc にアクセスできる必要があります。
   # EDCB はチューナー起動やチャンネル切り替えに時間がかかるため、Mirakurun / mirakc が利用できる環境であれば、この設定を有効にするとより快適に使えます。
-  always_receive_tv_from_mirakurun: true
+  always_receive_tv_from_mirakurun: false
 
   # EDCB (EpgTimerNW) の TCP API の URL
   # バックエンドに EDCB が選択されているときに利用されます。
@@ -33,7 +33,7 @@ general:
   # Geforce などの NVIDIA GPU をお使いなら、NVEncC が使えます。
   # Radeon などの AMD GPU をお使いなら、VCEEncC が使えます。
   # RK3588 などの Rockchip SoC 搭載の ARM SBC をお使いなら、rkmppenc が使えます (いくつか事前設定が必要です) 。
-  encoder: "QSVEncC"
+  encoder: "FFmpeg"
 
   # 番組情報の更新間隔 (分)
   # 番組情報を EDCB または Mirakurun / mirakc から取得する間隔を設定します。デフォルトは 5 (分) です。
@@ -44,7 +44,7 @@ general:
   debug: false
 
   # エンコーダーのログを有効にするか
-  # 有効にすると、エンコーダーのログが server/logs/KonomiTV-Encoder-(ストリームID).log に保存されます。
+  # 有効にすると、ライブ視聴時のエンコーダーのログが server/logs/KonomiTV-Encoder-(ストリームID).log に保存されます。
   # さらにデバッグモードが有効のときは、デバッグログとしてリアルタイムにエンコーダーのログが出力されます。
   debug_encoder: false
 
@@ -81,7 +81,7 @@ video:
   # 録画済み番組の保存先フォルダの絶対パス
   # 複数の保存先フォルダを指定できます。
   # Docker でインストールした場合も、ホストマシン側のフォルダの絶対パスを指定してください。
-  recorded_folders: ["/Record/TV-Encoded"]
+  recorded_folders: ["/record/TV-Record"]
 
 # =============================== キャプチャの設定 ===============================
 capture:
@@ -90,4 +90,4 @@ capture:
   # [ブラウザでのダウンロードと、KonomiTV サーバーへのアップロードを両方行う] が選択されているときに利用されます。
   # 複数の保存先フォルダを指定できます。先頭から順に利用され、保存先フォルダがいっぱいになったら次の保存先フォルダに保存されます。
   # Docker でインストールした場合も、ホストマシン側のフォルダの絶対パスを指定してください。
-  upload_folders: ["/Record/TV-Capture"]
+  upload_folders: ["/record/TV-Capture"]

@@ -1,19 +1,19 @@
-[submodule "ISDBScanner/ISDBScanner"]
-	path = ISDBScanner/ISDBScanner
+[submodule "src/ISDBScanner/ISDBScanner"]
+	path = src/ISDBScanner/ISDBScanner
 	url = https://github.com/tsukumijima/ISDBScanner
-[submodule "EDCB/EDCB"]
-	path = EDCB/EDCB
+[submodule "src/EDCB/EDCB"]
+	path = src/EDCB/EDCB
 	url = https://github.com/xtne6f/EDCB.git
 	branch = work-plus-s
-[submodule "EDCB/EDCB_Material_WebUI"]
-	path = EDCB/EDCB_Material_WebUI
+[submodule "src/EDCB/EDCB_Material_WebUI"]
+	path = src/EDCB/EDCB_Material_WebUI
 	url = https://github.com/EMWUI/EDCB_Material_WebUI.git
-[submodule "EDCB/BonDriver_LinuxMirakc"]
-	path = EDCB/BonDriver_LinuxMirakc
+[submodule "src/EDCB/BonDriver_LinuxMirakc"]
+	path = src/EDCB/BonDriver_LinuxMirakc
 	url = https://github.com/matching/BonDriver_LinuxMirakc.git
-[submodule "KonomiTV/KonomiTV"]
-	path = KonomiTV/KonomiTV
+[submodule "src/KonomiTV/KonomiTV"]
+	path = src/KonomiTV/KonomiTV
 	url = https://github.com/tsukumijima/KonomiTV
-[submodule "Amatsukaze/Amatsukaze"]
-	path = Amatsukaze/Amatsukaze
+[submodule "src/Amatsukaze/Amatsukaze"]
+	path = src/Amatsukaze/Amatsukaze
 	url = https://github.com/rigaya/Amatsukaze

@@ -1,0 +1,10 @@
+[project]
+name = "edcb-fetcher"
+version = "0.1.0"
+description = "Simple EDCB WebUI EPG fetcher using requests + pyquery"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.32.0",
+    "beautifulsoup4>=4.14.0",
+]

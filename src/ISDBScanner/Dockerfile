@@ -33,7 +33,7 @@ RUN wget https://github.com/kazuki0824/recisdb-rs/releases/download/1.2.3/recisd
     rm -rf /var/lib/apt/lists/*
 
 # 作業ディレクトリの設定
-WORKDIR /app
+WORKDIR /app/ISDBScanner
 
 # poetryの設定（仮想環境を作成しない）
 ENV POETRY_VIRTUALENVS_CREATE=false
@@ -49,10 +49,14 @@ COPY ISDBScanner/isdb_scanner ./isdb_scanner
 COPY ISDBScanner/Readme.md ISDBScanner/License.txt ./
 
 # poetryでプロジェクトをインストール
-RUN poetry install --only main
+RUN poetry build
+RUN pip install dist/*.whl
+
+# 作業ディレクトリの設定
+WORKDIR /app
 
 # 出力ディレクトリの作成
-RUN mkdir -p /app/scanned
+RUN mkdir -p /app/Scanned
 
 # デフォルトコマンド
 ENTRYPOINT ["python3", "-m", "isdb_scanner"]
