@@ -8,7 +8,8 @@ if [ -f "$FLAG_FILE" ]; then
   exit 0
 fi
 
-
+mkdir -p ./Scanned
+rm -rf ./Scanned/*
 echo "[ISDBScanner] Starting initial scan..."
 python3 -m isdb_scanner --list-tuners
 

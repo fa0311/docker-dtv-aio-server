@@ -1,4 +1,4 @@
 #!/bin/bash
 #!_EDCBX_DIRECT_
 
-AmatsukazeAddTask -url http://amatsukaze:32769 -s デフォルト -f "/Record/TV-Record/${FileName}.ts" -o "/Record/TV-Encode"
+AmatsukazeAddTask -ip amatsukaze -p 32768 -s "デフォルト" -f "/record/TV-Record/${FileName}.ts" -o "/record/TV-Encode"

@@ -33,7 +33,7 @@ general:
   # Geforce などの NVIDIA GPU をお使いなら、NVEncC が使えます。
   # Radeon などの AMD GPU をお使いなら、VCEEncC が使えます。
   # RK3588 などの Rockchip SoC 搭載の ARM SBC をお使いなら、rkmppenc が使えます (いくつか事前設定が必要です) 。
-  encoder: "FFmpeg"
+  encoder: "QSVEncC"
 
   # 番組情報の更新間隔 (分)
   # 番組情報を EDCB または Mirakurun / mirakc から取得する間隔を設定します。デフォルトは 5 (分) です。

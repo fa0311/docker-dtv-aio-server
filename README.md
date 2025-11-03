@@ -9,7 +9,10 @@ Docker を使用した日本のデジタルテレビ放送受信・録画・ス�
 ## 設計思想
 
 - `docker compose` で全て完結するセキュアで簡単なセットアップを目指します。
-- 宣言的な設定管理を重視し、環境の再現性を高めます。
+- 宣言的に環境構築を行い、手続き的に設定変更を行えます。
+- コンテナ間のネットワーク分離を行い、セキュリティを強化します。
+- 特権モードを使用せずに、必要なデバイスとリソースのみをコンテナに提供します。
+- ホストマシンへのリソースの露出を最小限に抑えます。
 
 ## セットアップ
 
@@ -61,6 +64,8 @@ sudo chown -R $UID:$GID .
 - 状態確認: `docker compose ps`
 - 滅びの呪文: `docker compose down --rmi all --volumes --remove-orphans && git clean -xdf`
 - 未使用データ一括削除: `docker system prune`
+- 再スキャン: `rm config/Scanned/.done && rm config/.done`
+- 設定リセット: `rm config/.done`
 
 ### 謝辞
 

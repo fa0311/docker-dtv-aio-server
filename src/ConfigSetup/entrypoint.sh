@@ -11,6 +11,7 @@ fi
 # EDCB設定ファイルの準備
 
 mkdir -p ./config/Scanned/EDCB
+rm -rf ./config/EDCB/*
 
 cp "./config/Scanned/EDCB-Wine/BonDriver_mirakc_S(BonDriver_mirakc).ChSet4.txt" "./config/Scanned/EDCB/BonDriver_LinuxMirakc_S(LinuxMirakc).ChSet4.txt"
 cp "./config/Scanned/EDCB-Wine/BonDriver_mirakc_T(BonDriver_mirakc).ChSet4.txt" "./config/Scanned/EDCB/BonDriver_LinuxMirakc_T(LinuxMirakc).ChSet4.txt"
@@ -18,6 +19,7 @@ cp "./config/Scanned/EDCB-Wine/BonDriver_mirakc(BonDriver_mirakc).ChSet4.txt" ".
 cp "./config/Scanned/EDCB-Wine/ChSet5.txt" "./config/Scanned/EDCB/ChSet5.txt"
 
 mkdir -p ./config/EDCB
+rm -rf ./config/EDCB/*
 mkdir -p ./config/EDCB/bat
 cp ./ConfigSetup/EDCB/Common.ini ./config/EDCB/Common.ini
 cp ./ConfigSetup/EDCB/EpgDataCap_Bon.ini ./config/EDCB/EpgDataCap_Bon.ini
@@ -26,12 +28,16 @@ python3 main.py -t "./ConfigSetup/EDCB/EpgTimerSrv.template.ini" -o ./config/EDC
 
 # KonomiTV設定ファイルの準備
 mkdir -p ./config/KonomiTV
+rm -rf ./config/KonomiTV/*
 cp -r ./ConfigSetup/KonomiTV/config.yaml ./config/KonomiTV/config.yaml
 
 # Amatsukaze設定ファイルの準備
 cd ./Amatsukaze/docker
 /bin/bash ./setup.sh
 cd ../../
+
+mkdir -p ./config/Amatsukaze
+rm -rf ./config/Amatsukaze/*
 
 mkdir -p ./config/Amatsukaze/avs
 mkdir -p ./config/Amatsukaze/bat
@@ -49,6 +55,7 @@ cp -r ./Amatsukaze/docker/JL/* ./config/Amatsukaze/JL
 
 # Mirakurun設定ファイルの準備
 mkdir -p ./config/Mirakurun
+rm -rf ./config/Mirakurun/*
 cp -r ./ConfigSetup/Mirakurun/server.yml ./config/Mirakurun/server.yml
 
 # 完了
