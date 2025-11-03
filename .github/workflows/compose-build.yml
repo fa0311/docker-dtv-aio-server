@@ -2,7 +2,7 @@ name: Compose build (CI)
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "docker-compose.yml"
       - "**/Dockerfile"
