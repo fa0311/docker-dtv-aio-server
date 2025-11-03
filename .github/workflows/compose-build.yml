@@ -1,4 +1,3 @@
-# .github/workflows/compose-build.yml
 name: Compose build (CI)
 
 on:
