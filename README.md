@@ -38,12 +38,7 @@ sudo chown -R $UID:$GID .
 
 初回起動はビルドに 10 分、チャンネルスキャンに 5 分、EPG 取得に 40 分程度かかります。
 
-### 3. 設定のカスタマイズ
-
-- `docker-compose.yml` を編集して、設定をカスタマイズします。
-- <http://192.168.70.3:5510/legacy/setting_bon.html> にアクセスして、ホストマシンに接続されている TV チューナーの設定を行います。
-
-### アクセス方法
+#### アクセス方法
 
 起動後、以下の URL でアクセスできます。
 
@@ -54,6 +49,55 @@ sudo chown -R $UID:$GID .
 - **Web Server**: `http://192.168.1.1:8080`
 - **NFS**: `192.168.1.1` `nfsvers=4`
 - **SMB**: `\\192.168.1.1\shares` `admin:password`
+
+### 3. 設定のカスタマイズ
+
+あなたがもし以下に該当する場合は、`src/*` を編集します。該当しない場合は `config/*` を編集します。
+
+- カスタマイズした設定を GitHub などで再共有したい場合
+- 宣言的に環境を構築したい場合
+
+`src/*` には `config/*` のデフォルト設定が含まれています。`config/*` は初回起動時に `src/*` からコピーされます。
+`config/.done` ファイルが存在しない場合に、`config/*` が `src/*` からコピーされます。
+一般的に、`src/*` の編集は高度なユーザー向けです。
+
+#### NVidia GPU を使用する場合
+
+デフォルトでは Intel GPU 用の設定になっています。NVidia GPU を使用する場合、`docker-compose.yml` を 2 箇所修正してください。
+
+```diff yaml
+- devices:
+-   - /dev/dri/:/dev/dri/
++  deploy:
++    resources:
++      reservations:
++        devices:
++          - driver: nvidia
++            count: all
++            capabilities: [compute, utility, video]
+```
+
+`src/ConfigSetup/KonomiTV/config.yaml` を開き、`encoder` の値を `NVEncC` に変更してください。
+
+```diff
+- encoder: "QSVEncC"
++ encoder: "NVEncC"
+```
+
+#### セキュリティを強化する
+
+デフォルトでは、一部のコンテナが特権モードで起動します。セキュリティを強化したい場合、`docker-compose.yml` を 3 箇所修正してください。
+お使いのチューナーやカードリーダーに応じて、必要なデバイスのみをマッピングしてください。
+
+```diff yaml
+- privileged: true
++ devices:
++   - /dev/bus:/dev/bus
++   - /dev/px4video0:/dev/px4video0
++   - /dev/px4video1:/dev/px4video1
++   - /dev/px4video2:/dev/px4video2
++   - /dev/px4video3:/dev/px4video3
+```
 
 ## チートシート
 
