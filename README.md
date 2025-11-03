@@ -36,8 +36,7 @@ docker compose build && docker compose up -d --wait && docker compose rm -f
 sudo chown -R $UID:$GID .
 ```
 
-初回起動はチャンネルスキャン, EPG 取得を行うため時間がかかります。
-ビルドに 10 分、チャンネルスキャンに 5 分、EPG 取得に 40 分程度かかります。
+初回起動はビルドに 10 分、チャンネルスキャンに 5 分、EPG 取得に 40 分程度かかります。
 
 ### 3. 設定のカスタマイズ
 
