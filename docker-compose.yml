@@ -177,7 +177,7 @@ services:
     volumes:
       - konomitv-data:/code/server/data/
       - tv-record-data:/host-rootfs/record/TV-Record
-      - tv-encoded-data:/host-rootfs/record/TV-Encode
+      - tv-encode-data:/host-rootfs/record/TV-Encode
       - tv-capture-data:/host-rootfs/record/TV-Capture
       - ./config/KonomiTV/config.yaml:/code/config.yaml
       - ./src/KonomiTV/healthcheck.sh:/code/server/healthcheck.sh:so
@@ -231,7 +231,7 @@ services:
       - amatsukaze-data:/app/data
       - amatsukaze-config:/app/config
       - tv-record-data:/record/TV-Record
-      - tv-encoded-data:/record/TV-Encode
+      - tv-encode-data:/record/TV-Encode
     depends_on:
       config-setup:
         condition: service_completed_successfully
@@ -275,7 +275,7 @@ services:
       - SHARED_DIRECTORY=/export/share
     volumes:
       - tv-record-data:/export/share/TV-Record
-      - tv-encoded-data:/export/share/TV-Encode
+      - tv-encode-data:/export/share/TV-Encode
       - tv-capture-data:/export/share/TV-Capture
     privileged: true
     restart: unless-stopped
@@ -298,7 +298,7 @@ services:
       WORKGROUP: "WORKGROUP"
     volumes:
       - tv-record-data:/shares/TV-Record
-      - tv-encoded-data:/shares/TV-Encode
+      - tv-encode-data:/shares/TV-Encode
       - tv-capture-data:/shares/TV-Capture
     restart: unless-stopped
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
@@ -314,7 +314,7 @@ services:
       - "8080:80"
     volumes:
       - tv-record-data:/srv/www/TV-Record:ro
-      - tv-encoded-data:/srv/www/TV-Encode:ro
+      - tv-encode-data:/srv/www/TV-Encode:ro
       - tv-capture-data:/srv/www/TV-Capture:ro
       - ./src/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
     restart: unless-stopped
@@ -341,8 +341,8 @@ volumes:
       type: none
       device: ./record/TV-Record
       o: bind
-  tv-encoded-data:
-    name: tv-encoded-data
+  tv-encode-data:
+    name: tv-encode-data
     driver: local
     driver_opts:
       type: none
