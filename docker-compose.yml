@@ -152,7 +152,6 @@ services:
       context: ./src/EDCBFetcher
     environment:
       - BASE_URL=http://edcb:5510
-      - SKIP_EPG_RELOAD=1
     depends_on:
       edcb:
         condition: service_healthy

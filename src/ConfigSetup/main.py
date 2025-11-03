@@ -3,8 +3,11 @@ from ISDBScanner.isdb_scanner.tuner import ISDBTuner
 import argparse
 
 def half_for_epg(n: int) -> int:
-    """EPG用チューナー数を計算 ((n - 1) // 2)。"""
-    return max((n - 1) // 2, 0)
+    """EPG用チューナー数を計算 ((n - 1) // 2)"""
+    if n == 0:
+        return 0
+    else:
+        return max(n // 2, 1)
 
 def main():
     parser = argparse.ArgumentParser(description="TVTest BonDriver設定生成スクリプト")
