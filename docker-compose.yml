@@ -267,16 +267,42 @@ services:
   # NFS サーバーコンテナを追加する設定
   # Linux クライアントから NFS マウントで録画フォルダにアクセスしたい場合に利用します。
   # 不要なら削除してください。
-  nfs:
+  nfs-record:
     image: itsthenetwork/nfs-server-alpine:latest
-    container_name: nfs-server
+    container_name: nfs-record
+    ports:
+      - "2049:2049"
     environment:
       - TZ=Asia/Tokyo
       - SHARED_DIRECTORY=/export/share
     volumes:
-      - tv-record-data:/export/share/TV-Record
-      - tv-encode-data:/export/share/TV-Encode
-      - tv-capture-data:/export/share/TV-Capture
+      - tv-record-data:/export/share
+    privileged: true
+    restart: unless-stopped
+
+  nfs-encode:
+    image: itsthenetwork/nfs-server-alpine:latest
+    container_name: nfs-encode
+    ports:
+      - "2050:2049"
+    environment:
+      - TZ=Asia/Tokyo
+      - SHARED_DIRECTORY=/export/share
+    volumes:
+      - tv-encode-data:/export/share
+    privileged: true
+    restart: unless-stopped
+
+  nfs-capture:
+    image: itsthenetwork/nfs-server-alpine:latest
+    container_name: nfs-capture
+    ports:
+      - "2051:2049"
+    environment:
+      - TZ=Asia/Tokyo
+      - SHARED_DIRECTORY=/export/share
+    volumes:
+      - tv-capture-data:/export/share
     privileged: true
     restart: unless-stopped
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
