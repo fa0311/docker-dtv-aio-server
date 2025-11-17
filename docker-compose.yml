@@ -1,6 +1,5 @@
 services:
   isdb-scanner:
-    image: isdb-scanner
     container_name: ISDBScanner
     build:
       context: ./src/ISDBScanner
@@ -31,7 +30,6 @@ services:
     # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
   config-setup:
-    image: config-setup
     container_name: ConfigSetup
     build:
       context: ./src
@@ -60,7 +58,6 @@ services:
     # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
   mirakurun:
-    image: mirakurun
     container_name: Mirakurun
     build:
       context: ./src/Mirakurun
@@ -109,7 +106,6 @@ services:
     # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
   edcb:
-    image: edcb
     container_name: EDCB
     build:
       context: ./src/EDCB
@@ -146,7 +142,6 @@ services:
       start_interval: 2s
 
   edcb-fetcher:
-    image: edcb-fetcher
     container_name: EDCBFetcher
     build:
       context: ./src/EDCBFetcher
@@ -158,7 +153,6 @@ services:
     restart: no
 
   konomitv:
-    image: konomitv
     container_name: KonomiTV
     build:
       context: ./src/KonomiTV/KonomiTV
