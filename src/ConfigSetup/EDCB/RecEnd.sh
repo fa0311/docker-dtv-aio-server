@@ -12,3 +12,7 @@ curl -X POST http://file-transfer-server:8080/transfer \
   -d "{\"source_path\":\"local:/TV-Record/${FileName}.ts.program.txt\",\"dest_path\":\"peer:/TV-Record/${FileName}.ts.program.txt\"}"
 
 AmatsukazeAddTask -ip "192.168.70.2" -p 32768 -s "nvenc" -f "/record/TV-Record/${FileName}.ts" -o "/record/TV-Encode"
+
+rm -f "/record/TV-Record/${FileName}.ts"
+rm -f "/record/TV-Record/${FileName}.ts.err"
+rm -f "/record/TV-Record/${FileName}.ts.program.txt"
