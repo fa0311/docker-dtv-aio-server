@@ -1,6 +1,8 @@
 #!/bin/bash
 #!_EDCBX_DIRECT_
 
+set -euo pipefail
+
 curl -X POST http://file-transfer-server:8080/transfer \
   -H "Content-Type: application/json" \
   -d "{\"source_path\":\"local:/TV-Record/${FileName}.ts\",\"dest_path\":\"peer:/TV-Record/${FileName}.ts\"}"
