@@ -207,8 +207,8 @@ services:
     image: ghcr.io/fa0311/file-transfer-system/file-transfer-server:latest
     container_name: file-transfer-server
     environment:
-      - TARGET_SERVER=192.168.70.2:50051
-      - ALLOWED_DIR=/file-transfer-data
+      - PEER_SERVER_ADDR=192.168.70.2:50051
+      - ROOT_DIR=/file-transfer-data
     volumes:
       - tv-record-data:/file-transfer-data/TV-Record
       - tv-encode-data:/file-transfer-data/TV-Encode
