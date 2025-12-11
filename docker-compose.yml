@@ -158,7 +158,6 @@ services:
       context: ./src/KonomiTV/KonomiTV
     ports:
       - 7000:7000
-      - 7001:7001
     depends_on:
       mirakurun:
         condition: service_healthy
@@ -203,16 +202,6 @@ services:
   #           count: all
   #           capabilities: [compute, utility, video]
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
-
-  konomitv-proxy:
-    image: alpine/socat
-    container_name: KonomiTV-Proxy
-    network_mode: "service:konomitv"
-    depends_on:
-      - konomitv
-    command:
-      - TCP-LISTEN:7001,fork,reuseaddr
-      - TCP:127.0.0.77:7010
 
   file-transfer-server:
     image: ghcr.io/fa0311/file-transfer-system/file-transfer-server:latest
