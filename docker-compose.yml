@@ -152,6 +152,13 @@ services:
         condition: service_healthy
     restart: no
 
+  cert-generator:
+    build:
+      context: ./src/CertGenerator
+    container_name: CertGenerator
+    volumes:
+      - ./config/certs:/out
+
   konomitv:
     container_name: KonomiTV
     build:
@@ -167,6 +174,8 @@ services:
         condition: service_completed_successfully
       config-setup:
         condition: service_completed_successfully
+      cert-generator:
+        condition: service_completed_successfully
     restart: unless-stopped
     volumes:
       - konomitv-data:/code/server/data/
@@ -175,6 +184,7 @@ services:
       - tv-capture-data:/host-rootfs/record/TV-Capture
       - ./config/KonomiTV/config.yaml:/code/config.yaml
       - ./src/KonomiTV/healthcheck.sh:/code/server/healthcheck.sh:so
+      - ./config/certs:/certs:ro
     healthcheck:
       test: [CMD, /bin/bash, healthcheck.sh]
       interval: 5m
