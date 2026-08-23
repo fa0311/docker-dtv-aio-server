@@ -111,6 +111,7 @@ services:
       context: ./src/EDCB
     ports:
       - "5510:5510"
+      - "4510:4510"
     expose:
       - 4510
     volumes:
@@ -247,44 +248,44 @@ services:
   # NFS サーバーコンテナを追加する設定
   # Linux クライアントから NFS マウントで録画フォルダにアクセスしたい場合に利用します。
   # 不要なら削除してください。
-  # nfs-record:
-  #   image: itsthenetwork/nfs-server-alpine:latest
-  #   container_name: nfs-record
-  #   ports:
-  #     - "2049:2049"
-  #   environment:
-  #     - TZ=Asia/Tokyo
-  #     - SHARED_DIRECTORY=/export/share
-  #   volumes:
-  #     - tv-record-data:/export/share
-  #   privileged: true
-  #   restart: unless-stopped
+  nfs-record:
+    image: itsthenetwork/nfs-server-alpine:latest
+    container_name: nfs-record
+    ports:
+      - "2049:2049"
+    environment:
+      - TZ=Asia/Tokyo
+      - SHARED_DIRECTORY=/export/share
+    volumes:
+      - tv-record-data:/export/share
+    privileged: true
+    restart: unless-stopped
 
-  # nfs-encode:
-  #   image: itsthenetwork/nfs-server-alpine:latest
-  #   container_name: nfs-encode
-  #   ports:
-  #     - "2050:2049"
-  #   environment:
-  #     - TZ=Asia/Tokyo
-  #     - SHARED_DIRECTORY=/export/share
-  #   volumes:
-  #     - tv-encode-data:/export/share
-  #   privileged: true
-  #   restart: unless-stopped
+  nfs-encode:
+    image: itsthenetwork/nfs-server-alpine:latest
+    container_name: nfs-encode
+    ports:
+      - "2050:2049"
+    environment:
+      - TZ=Asia/Tokyo
+      - SHARED_DIRECTORY=/export/share
+    volumes:
+      - tv-encode-data:/export/share
+    privileged: true
+    restart: unless-stopped
 
-  # nfs-capture:
-  #   image: itsthenetwork/nfs-server-alpine:latest
-  #   container_name: nfs-capture
-  #   ports:
-  #     - "2051:2049"
-  #   environment:
-  #     - TZ=Asia/Tokyo
-  #     - SHARED_DIRECTORY=/export/share
-  #   volumes:
-  #     - tv-capture-data:/export/share
-  #   privileged: true
-  #   restart: unless-stopped
+  nfs-capture:
+    image: itsthenetwork/nfs-server-alpine:latest
+    container_name: nfs-capture
+    ports:
+      - "2051:2049"
+    environment:
+      - TZ=Asia/Tokyo
+      - SHARED_DIRECTORY=/export/share
+    volumes:
+      - tv-capture-data:/export/share
+    privileged: true
+    restart: unless-stopped
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
   # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
@@ -326,6 +327,18 @@ services:
   #   restart: unless-stopped
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
+  # ==================== ↓↓↓↓↓ ここからユーザー設定 ↓↓↓↓↓ ====================
+  portainer:
+    image: portainer/portainer-ce:lts
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - portainer-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+  # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
+
 volumes:
   mirakurun-data:
     name: mirakurun-data
@@ -361,4 +374,6 @@ volumes:
       type: none
       device: /mnt/recordings/TV-Capture
       o: bind
+  portainer-data:
+    name: portainer-data
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================

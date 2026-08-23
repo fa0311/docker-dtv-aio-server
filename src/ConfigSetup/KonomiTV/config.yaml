@@ -59,8 +59,8 @@ server:
   # カスタム HTTPS 証明書を有効化すると、https://192-168-x-xx.local.konomi.tv:7000/ の URL では KonomiTV にアクセスできなくなります。
   # カスタム HTTPS 証明書を有効化するには、custom_https_certificate と custom_https_private_key の両方に設定が必要です。
   # 基本的に変更する必要はありません。HTTPS 証明書について詳細に理解している方のみ設定してください。
-  custom_https_certificate: null
-  custom_https_private_key: null
+  custom_https_certificate: /certs/reverse-proxy.crt
+  custom_https_private_key: /certs/reverse-proxy.key
 
 # ======================= テレビのライブストリーミングの設定 =======================
 tv:
