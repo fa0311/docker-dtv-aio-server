@@ -192,6 +192,55 @@ services:
       - portainer-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node-exporter
+    command:
+      - --path.rootfs=/host
+      - --path.udev.data=/host/run/udev/data
+    network_mode: host
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, wget, -qO-, "http://localhost:9100/metrics"]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped
+
+  mirakurun-exporter:
+    image: ghcr.io/coord-e/mirakurun-exporter:latest
+    container_name: mirakurun-exporter
+    command:
+      - --exporter.mirakurun-url=http://mirakurun:40772/
+      - --exporter.status
+      - --exporter.tuners
+      - --exporter.services
+    ports:
+      - "9110:9110"
+    depends_on:
+      mirakurun:
+        condition: service_healthy
+    restart: unless-stopped
   # ==================== ↑↑↑↑↑ ここまでユーザー設定 ↑↑↑↑↑ ====================
 
 volumes:
